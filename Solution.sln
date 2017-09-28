@@ -124,13 +124,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "A06 - Octree", "A06 - Octre
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "24_Physics", "24_Physics\24_Physics.vcxproj", "{58CB6636-1057-466F-AB91-BADB3395421A}"
 EndProject
-<<<<<<< HEAD
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E03_Repository", "E03_Repository\E03_Repository.vcxproj", "{D8FC2585-D502-44B1-B817-74BEE0B53382}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlanS - A02", "BlanS - A02\BlanS - A02.vcxproj", "{75BD931A-E2AC-4A81-9C11-400C7D0A9E9B}"
-=======
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "12_MeshClass_Del", "12_MeshClass_Del\12_MeshClass_Del.vcxproj", "{8D7AB7A9-4CB7-48DD-B29E-4310BE8A0DBC}"
->>>>>>> 2d040b46d588b02ab641f5e4effaa52dff4a98a8
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
