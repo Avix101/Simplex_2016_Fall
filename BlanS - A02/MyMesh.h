@@ -23,6 +23,9 @@ using namespace Simplex;
 
 class MyMesh
 {
+	//Used in all generate methods
+	const float radiansInCircle = 2.0f * PI;
+
 	bool m_bBinded = false;		//Binded flag
 	uint m_uVertexCount = 0;	//Number of vertices in this MyMesh
 	GLuint m_VAO = 0;			//OpenGL Vertex Array Object
