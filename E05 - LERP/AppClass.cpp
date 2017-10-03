@@ -2,7 +2,7 @@
 void Application::InitVariables(void)
 {
 	////Change this to your name and email
-	//m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Stasha Blank - sob3966@rit.edu";
 
 	////Alberto needed this at this position for software recording.
 	//m_pWindow->setPosition(sf::Vector2i(710, 0));
@@ -56,17 +56,29 @@ void Application::Display(void)
 
 	//calculate the current position
 	vector3 v3CurrentPos;
+
+	//Set some statics to keep track of the current stop index, the previous stop, and the time it should take to travel between points
+	static int stopIndex = 1;
+	static int prevStopIndex = 0;
+	static float fTravelTime = 2.0f;
+
+	//If the timer is greater than the travel time
+	if (fTimer > fTravelTime) {
+
+		//Set the previous stop index to the current one, increment the current one, make sure the current one doesn't exceed the max index of the array, and reset the timer
+		prevStopIndex = stopIndex;
+		stopIndex++;
+		stopIndex = stopIndex % 11;
+		fTimer = 0;
+	}
 	
+	//The lerp percent starts at 0, and then is equal to the progress of the timer as it goes from 0 to the travel time
+	static float fPercent = 0;
+	fPercent = MapValue(fTimer, 0.0f, fTravelTime, 0.0f, 1.0f);
 
-
-
-
-	//your code goes here
-	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
+	//The current position is equal to the lerp between the previous stop and the current stop, using the calculated percent
+	v3CurrentPos = glm::lerp(m_stopsList[prevStopIndex], m_stopsList[stopIndex], fPercent);
 	//-------------------
-	
-
-
 	
 	matrix4 m4Model = glm::translate(v3CurrentPos);
 	m_pModel->SetModelMatrix(m4Model);
