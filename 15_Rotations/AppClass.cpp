@@ -45,14 +45,26 @@ void Application::Display(void)
 	//	m4Model = m4Rotation * glm::translate(IDENTITY_M4, vector3(2.5f, 0.0f, 0.0f)) * glm::transpose(m4Rotation);
 	
 	//m_v3Rotation = vector3(125.0f, 1000.0f, -5.0f);
-	quaternion q1 = glm::angleAxis(0.0f, m_v3Rotation);
-	matrix4 axisAngle = ToMatrix4(q1);
-	matrix4 m4RotX = glm::rotate(axisAngle, m_v3Rotation.x, vector3(1.0f, 0.0f, 0.0f));
-	matrix4 m4RotY = glm::rotate(axisAngle, m_v3Rotation.y, vector3(0.0f, 1.0f, 0.0f));
-	matrix4 m4RotZ = glm::rotate(axisAngle, m_v3Rotation.z, vector3(0.0f, 0.0f, 1.0f));
+	
+	//Calculate a new rotation quaternion (a degree of rotation around the specified axis)
+	quaternion rotation = glm::angleAxis(1.0f, m_v3Rotation);
+	
+	//Calculate the new orientation by multiplying the rotation by the current orientation
+	m_qCurrentOrientation = rotation * m_qCurrentOrientation;
+
+	//Reset the vector storing our axis of rotation
+	m_v3Rotation = vector3();
+
+	//matrix4 axisAngle = ToMatrix4(currentOrientation);
+	//matrix4 m4RotX = glm::rotate(axisAngle, m_v3Rotation.x, vector3(1.0f, 0.0f, 0.0f));
+	//matrix4 m4RotY = glm::rotate(axisAngle, m_v3Rotation.y, vector3(0.0f, 1.0f, 0.0f));
+	//matrix4 m4RotZ = glm::rotate(axisAngle, m_v3Rotation.z, vector3(0.0f, 0.0f, 1.0f));
 	
 	//matrix4 m4Rotation = glm::rotate(IDENTITY_M4, 60.0f, vector3(0.0f, 0.0f, 1.0f));
-	matrix4 m4Model = m4RotX * m4RotZ * m4RotY;
+	//matrix4 m4Model = m4RotX * m4RotZ * m4RotY;
+
+	//Make a model matrix for the current orientation of the model
+	matrix4 m4Model = ToMatrix4(m_qCurrentOrientation);
 
 	/*
 	//extra part, how to rotate around a point (in this case the base of the cone)

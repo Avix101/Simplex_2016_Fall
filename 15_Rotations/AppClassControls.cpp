@@ -132,6 +132,7 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		break;
 	case sf::Keyboard::R:
 		m_v3Rotation = vector3();
+		m_qCurrentOrientation = quaternion(0.0f, vector3(0.0f, 1.0f, 0.0f));
 		break;
 	}
 
@@ -423,33 +424,33 @@ void Application::ProcessKeyboard(void)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
 	{
 		if (fMultiplier) {
-			m_v3Rotation.x -= 1.0f;
+			m_v3Rotation.x = 1.0f;
 		}
 		else
 		{
-			m_v3Rotation.x += 1.0f;
+			m_v3Rotation.x = 1.0f;
 		}
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
 	{
 		if (fMultiplier) {
-			m_v3Rotation.y -= 1.0f;
+			m_v3Rotation.y = 1.0f;
 		}
 		else
 		{
-			m_v3Rotation.y += 1.0f;
+			m_v3Rotation.y = 1.0f;
 		}
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 	{
 		if (fMultiplier) {
-			m_v3Rotation.z -= 1.0f;
+			m_v3Rotation.z = 1.0f;
 		}
 		else
 		{
-			m_v3Rotation.z += 1.0f;
+			m_v3Rotation.z = 1.0f;
 		}
 	}
 }
