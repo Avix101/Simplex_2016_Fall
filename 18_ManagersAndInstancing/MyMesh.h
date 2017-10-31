@@ -121,6 +121,7 @@ public:
 	OUTPUT: ---
 	*/
 	void Render(MyCamera* a_pCamera, std::vector<matrix4> a_ToWorldList);
+	void Render(MyCamera* a_pCamera, std::vector<matrix4*> a_ToWorldList);
 	/*
 	USAGE: Adds a tri to the list points in the buffer to be compiled
 	//C
