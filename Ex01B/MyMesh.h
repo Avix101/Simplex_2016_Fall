@@ -6,10 +6,6 @@ Date: 2017/05
 #define __MYMESH_H_
 
 #include "Definitions.h"
-#include "MyCamera.h"
-
-namespace Simplex
-{
 
 class MyMesh
 {
@@ -107,22 +103,6 @@ public:
 	*/
 	void Render(matrix4 a_mProjection, matrix4 a_mView, matrix4 a_mModel);
 	/*
-	USAGE: Renders the mesh on the specified position by the
-	provided camera view and projection
-	ARGUMENTS: MyCamera a_mCamera -> the camera I want to see my scene from
-	OUTPUT: ---
-	*/
-	void Render(MyCamera* a_pCamera, matrix4 a_mModel);
-	/*
-	USAGE: Will render this mesh a_ToWorlsList size times
-	ARGUMENTS:
-	-	MyCamera* a_pCamera
-	-	std::vector<matrix4> a_ToWorldList
-	OUTPUT: ---
-	*/
-	void Render(MyCamera* a_pCamera, std::vector<matrix4> a_ToWorldList);
-	void Render(MyCamera* a_pCamera, std::vector<matrix4*> a_ToWorldList);
-	/*
 	USAGE: Adds a tri to the list points in the buffer to be compiled
 	//C
 	//| \
@@ -219,8 +199,6 @@ public:
 	void GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color = C_WHITE);
 #pragma endregion
 };
-
-}//namespace Simplex
 
 #endif //__MYMESH_H_
 

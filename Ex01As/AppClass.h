@@ -10,17 +10,14 @@ Date: 2017/05
 #include "ControllerConfiguration.h"
 #include "imgui\ImGuiObject.h"
 
-#include "MyMeshManager.h"
-namespace Simplex
-{
+#include "MyMesh.h"
 
 class Application
 {
-	std::vector<matrix4*> m_m4List;
-	MyMesh* m_pMesh = nullptr;
-	MyCamera* m_pCamera = nullptr;
-	MyMeshManager* m_pMyMeshMngr = nullptr;
+	vector3 m_v3Rotation = vector3(0.0f, 0.0f, 0.0f);
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	MyMesh* m_pMesh = nullptr;
+	std::vector<vector3> m_stopsList;
 private:
 	static ImGuiObject gui; //GUI object
 
@@ -310,11 +307,9 @@ private:
 	OUTPUT: ---
 	*/
 	Application& operator=(Application const& input);
-	
+
 #pragma endregion
 };
-
-} //namespace simplex
 
 #endif //__APPLICATIONCLASS_H_
 
