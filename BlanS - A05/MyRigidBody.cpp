@@ -276,137 +276,96 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
-
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
+	//Declare two arrays, one to hold this shape's 8 points (bounding box) and the other to hold the other shape's 8 points (bounding box)
 	vector3 shapePoints[8];
 	vector3 otherPoints[8];
 	
-	//Back square
+	//Calculate all of the points in the shape's array
 	shapePoints[0] = m_v3MinL;
 	shapePoints[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);
 	shapePoints[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);
 	shapePoints[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);
-
-	//Front square
 	shapePoints[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);
 	shapePoints[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);
 	shapePoints[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);
 	shapePoints[7] = m_v3MaxL;
 
-	//Place them in world space
-	//std::cout << shapePoints[7].x;
-	for (uint uIndex = 0; uIndex < 8; ++uIndex)
-	{
-		shapePoints[uIndex] = vector3(m_m4ToWorld * vector4(shapePoints[uIndex], 1.0f));
-	}
-	//std::cout << shapePoints[7].x << std::endl;
-
-	vector3 shapeMinG = vector3(shapePoints[0]);
-	vector3 shapeMaxG = vector3(shapePoints[7]);
-
-	vector3 axes[15];
-	axes[0] = shapePoints[4] - shapePoints[0];
-	axes[1] = shapePoints[1] - shapePoints[0];
-	axes[2] = shapePoints[2] - shapePoints[0];
-
-	/*for (uint i = 1; i < 3; i++)
-	{
-		vector3 head = shapePoints[i];
-		vector3 tail = shapePoints[i + 1 == 4 ? 0 : i + 1];
-		vector3 edge = head - tail;
-		vector3 normal = vector3(-edge.y, edge.z, 0.0f);
-		//vector3 normal = glm::cross(vector3(0.0f, 0.0f, 1.0f), edge);
-		axes[i] = normal;
-		std::cout << "X: " << axes[i].x << ", Y: " << axes[i].y << ", Z: " << axes[i].z << std::endl;
-		//std::cout << "X: " << normal.x << ", Y: " << normal.y << ", Z: " << normal.z << std::endl;
-	}*/
-
+	//Get the other shape's local min and max
 	vector3 otherLocalMin = a_pOther->GetMinLocal();
 	vector3 otherLocalMax = a_pOther->GetMaxLocal();
 
-	//Back square
+	//Calculate all of the points in the other shape's array
 	otherPoints[0] = otherLocalMin;
 	otherPoints[1] = vector3(otherLocalMax.x, otherLocalMin.y, otherLocalMin.z);
 	otherPoints[2] = vector3(otherLocalMin.x, otherLocalMax.y, otherLocalMin.z);
 	otherPoints[3] = vector3(otherLocalMax.x, otherLocalMax.y, otherLocalMin.z);
-
-	//Front square
 	otherPoints[4] = vector3(otherLocalMin.x, otherLocalMin.y, otherLocalMax.z);
 	otherPoints[5] = vector3(otherLocalMax.x, otherLocalMin.y, otherLocalMax.z);
 	otherPoints[6] = vector3(otherLocalMin.x, otherLocalMax.y, otherLocalMax.z);
 	otherPoints[7] = otherLocalMax;
 
-	//Place them in world space
+	//Place all of the points in world space for each shape (according to their model matricies)
 	for (uint uIndex = 0; uIndex < 8; ++uIndex)
 	{
+		shapePoints[uIndex] = vector3(m_m4ToWorld * vector4(shapePoints[uIndex], 1.0f));
 		otherPoints[uIndex] = vector3(a_pOther->GetModelMatrix() * vector4(otherPoints[uIndex], 1.0f));
 	}
 
-	vector3 otherMinG = vector3(otherPoints[0]);
-	vector3 otherMaxG = vector3(otherPoints[7]);
+	//Declare an array to hold all 15 axes that we're checking
+	vector3 axes[15];
 
-	axes[3] = otherPoints[4] - otherPoints[0]; //Z
-	axes[4] = otherPoints[1] - otherPoints[0]; //X
-	axes[5] = otherPoints[2] - otherPoints[0]; //Y
+	//Compute the shape's x, y, and z vectors using corner points on its bounding box
+	axes[0] = shapePoints[1] - shapePoints[0]; //Ax axis
+	axes[1] = shapePoints[2] - shapePoints[0]; //Ay axis
+	axes[2] = shapePoints[4] - shapePoints[0]; //Az axis
 
-	axes[6] = glm::cross(axes[0], axes[3]);
-	axes[7] = glm::cross(axes[0], axes[4]);
-	axes[8] = glm::cross(axes[0], axes[5]);
+	//Compute the other shape's x, y, and z vectors using corner points on its bounding box
+	axes[3] = otherPoints[1] - otherPoints[0]; //Bx axis
+	axes[4] = otherPoints[2] - otherPoints[0]; //By axis
+	axes[5] = otherPoints[4] - otherPoints[0]; //Bz axis
 
-	axes[9] = glm::cross(axes[1], axes[3]);
-	axes[10] = glm::cross(axes[1], axes[4]);
-	axes[11] = glm::cross(axes[1], axes[5]);
+	//Compute the remaining axes by finding the cross products of all of the combinations of each shape's local x, y, and z
+	axes[6] = glm::cross(axes[0], axes[3]); //AxBx
+	axes[7] = glm::cross(axes[0], axes[4]); //AxBy
+	axes[8] = glm::cross(axes[0], axes[5]); //AxBz
+	axes[9] = glm::cross(axes[1], axes[3]); //AyBx
+	axes[10] = glm::cross(axes[1], axes[4]); //AyBy
+	axes[11] = glm::cross(axes[1], axes[5]); //AyBz
+	axes[12] = glm::cross(axes[2], axes[3]); //AzBx
+	axes[13] = glm::cross(axes[2], axes[4]); //AzBy
+	axes[14] = glm::cross(axes[2], axes[5]); //AzBz
 
-	axes[12] = glm::cross(axes[2], axes[3]);
-	axes[13] = glm::cross(axes[2], axes[4]);
-	axes[14] = glm::cross(axes[2], axes[5]);
-
-	/*for (uint i = 5; i < 7; i++)
-	{
-		vector3 head = shapePoints[i - 4];
-		vector3 tail = shapePoints[i - 4 + 1 == 4 ? 0 : i + 1 - 4];
-		vector3 edge = head - tail;
-		vector3 normal = vector3(-edge.y, edge.z, 0.0f);
-		//vector3 normal = glm::cross(edge, vector3(0.0f, 0.0f, 1.0f));
-		axes[i] = normal;
-	}*/
-
+	//Loop over all of the calculated axes
 	for (uint i = 0; i < 15; i++)
 	{
+		//Grab the current axis
 		vector3 axis = axes[i];
 
-		/*float shapeMin = glm::dot(axis, shapeMinG);
-		float shapeMax = glm::dot(axis, shapeMaxG);
-		float otherMin = glm::dot(axis, otherMinG);
-		float otherMax = glm::dot(axis, otherMaxG);*/
+		//Declare each shape's min and max point projected onto this axis
 		float shapeMin = glm::dot(axis, shapePoints[0]);
 		float shapeMax = glm::dot(axis, shapePoints[0]);
 		float otherMin = glm::dot(axis, otherPoints[0]);
 		float otherMax = glm::dot(axis, otherPoints[0]);
 
-
+		//Iterate through the remaining points in each shape's point list
 		for (uint j = 1; j < 8; j++)
 		{
+			//Calculate that points' value projected onto the current axis
 			float currentShapeValue = glm::dot(axis, shapePoints[j]);
 			float currentOtherValue = glm::dot(axis, otherPoints[j]);
 
+			//If the point's current projected value is less than the min, set the min to the current projected value
 			if (currentShapeValue < shapeMin)
 			{
 				shapeMin = currentShapeValue;
 			}
+			//Same for the max value
 			else if (currentShapeValue > shapeMax)
 			{
 				shapeMax = currentShapeValue;
 			}
 
+			//Do the same check for the other shape's min and max
 			if (currentOtherValue < otherMin)
 			{
 				otherMin = currentOtherValue;
@@ -417,11 +376,14 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 			}
 		}
 
-		//std::cout << shapeMax << " " << otherMin << " " << (shapeMax < otherMin) << std::endl;
-
+		//If the shape's max is less than the other shape's min or if the other shape's max is less than this shape's min
 		if (shapeMax < otherMin || otherMax < shapeMin)
 		{
-			return eSATResults::SAT_AX;
+			//We've found a separating axis, so return it!
+			//Also note that I've set up the axis array's indicies to line up exactly with the eSATResults enumeration (if you add 1)
+			//So to return the separating axis, the loop variable i (+1) just needs to be converted into the enum equivalent
+			eSATResults result = static_cast<eSATResults>(i + 1);
+			return result;
 		}
 	}
 
