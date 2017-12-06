@@ -108,6 +108,17 @@ MyEntityManager::~MyEntityManager(){Release();};
 // other methods
 void Simplex::MyEntityManager::Update(void)
 {
+	for (uint i = 0; i < entities.size(); i++)
+	{
+		for (uint j = 0; j < entities.size(); j++)
+		{
+			if (i == j) {
+				continue;
+			}
+
+			entities[i]->IsColliding(entities[j]);
+		}
+	}
 }
 void Simplex::MyEntityManager::AddEntity(String a_sFileName, String a_sUniqueID)
 {
